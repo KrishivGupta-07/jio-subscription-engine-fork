@@ -91,4 +91,46 @@ public class ProductOrderApiController implements ProductOrderApi {
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
+
+    @Override
+    public ResponseEntity<ProductOrder> patchProductOrder(
+            @PathVariable("id") String id,
+            @Valid @RequestBody org.openapitools.model.ProductOrderUpdate productOrder) {
+        return repository.findById(id).map(existing -> {
+            if (productOrder.getCancellationDate() != null)       existing.setCancellationDate(productOrder.getCancellationDate());
+            if (productOrder.getCancellationReason() != null)     existing.setCancellationReason(productOrder.getCancellationReason());
+            if (productOrder.getCategory() != null)               existing.setCategory(productOrder.getCategory());
+            if (productOrder.getCompletionDate() != null)         existing.setCompletionDate(productOrder.getCompletionDate());
+            if (productOrder.getDescription() != null)            existing.setDescription(productOrder.getDescription());
+            if (productOrder.getExpectedCompletionDate() != null) existing.setExpectedCompletionDate(productOrder.getExpectedCompletionDate());
+            if (productOrder.getExternalId() != null)             existing.setExternalId(productOrder.getExternalId());
+            if (productOrder.getNotificationContact() != null)    existing.setNotificationContact(productOrder.getNotificationContact());
+            if (productOrder.getPriority() != null)               existing.setPriority(productOrder.getPriority());
+            if (productOrder.getRequestedCompletionDate() != null) existing.setRequestedCompletionDate(productOrder.getRequestedCompletionDate());
+            if (productOrder.getRequestedStartDate() != null)     existing.setRequestedStartDate(productOrder.getRequestedStartDate());
+            if (productOrder.getState() != null)                  existing.setState(productOrder.getState());
+            if (productOrder.getAtBaseType() != null)             existing.setAtBaseType(productOrder.getAtBaseType());
+            if (productOrder.getAtType() != null)                 existing.setAtType(productOrder.getAtType());
+            if (!productOrder.getAgreement().isEmpty())           existing.setAgreement(productOrder.getAgreement());
+            if (!productOrder.getChannel().isEmpty())             existing.setChannel(productOrder.getChannel());
+            if (!productOrder.getNote().isEmpty())                existing.setNote(productOrder.getNote());
+            if (!productOrder.getOrderTotalPrice().isEmpty())     existing.setOrderTotalPrice(productOrder.getOrderTotalPrice());
+            if (!productOrder.getPayment().isEmpty())             existing.setPayment(productOrder.getPayment());
+            if (!productOrder.getProductOfferingQualification().isEmpty()) existing.setProductOfferingQualification(productOrder.getProductOfferingQualification());
+            if (!productOrder.getProductOrderItem().isEmpty())    existing.setProductOrderItem(productOrder.getProductOrderItem());
+            if (!productOrder.getQuote().isEmpty())               existing.setQuote(productOrder.getQuote());
+            if (!productOrder.getRelatedParty().isEmpty())        existing.setRelatedParty(productOrder.getRelatedParty());
+            return ResponseEntity.ok(repository.save(existing));
+        }).orElse(ResponseEntity.notFound().build());
+    }
+
+    @Override
+    public ResponseEntity<Void> deleteProductOrder(
+            @PathVariable("id") String id) {
+        if (!repository.existsById(id)) {
+            return ResponseEntity.notFound().build();
+        }
+        repository.deleteById(id);
+        return ResponseEntity.noContent().build();
+    }
 }

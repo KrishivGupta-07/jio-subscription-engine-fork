@@ -561,8 +561,8 @@ public class ProductOrderUpdate {
    * Get productOrderItem
    * @return productOrderItem
    */
-  @NotNull @Valid @Size(min = 1) 
-  @Schema(name = "productOrderItem", requiredMode = Schema.RequiredMode.REQUIRED)
+  @Valid
+  @Schema(name = "productOrderItem", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
   @JsonProperty("productOrderItem")
   public List<@Valid ProductOrderItem> getProductOrderItem() {
     return productOrderItem;

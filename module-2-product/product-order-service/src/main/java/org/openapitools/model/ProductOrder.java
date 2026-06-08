@@ -28,7 +28,16 @@ import java.time.OffsetDateTime;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 import io.swagger.v3.oas.annotations.media.Schema;
-
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.annotations.UuidGenerator;
+import org.hibernate.type.SqlTypes;
 
 import java.util.*;
 import jakarta.annotation.Generated;
@@ -37,10 +46,14 @@ import jakarta.annotation.Generated;
  * A Product Order is a type of order which  can  be used to place an order between a customer and a service provider or between a service provider and a partner and vice versa,
  */
 
+@Entity
+@Table(name = "product_order")
 @Schema(name = "ProductOrder", description = "A Product Order is a type of order which  can  be used to place an order between a customer and a service provider or between a service provider and a partner and vice versa,")
 @Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-06-05T16:24:09.119988100+05:30[Asia/Calcutta]", comments = "Generator version: 7.22.0")
 public class ProductOrder {
 
+  @Id
+  @UuidGenerator
   private @Nullable String id;
 
   private @Nullable String href;
@@ -76,38 +89,60 @@ public class ProductOrder {
   private @Nullable OffsetDateTime requestedStartDate;
 
   @Valid
+  @JdbcTypeCode(SqlTypes.JSON)
+  @Column(columnDefinition = "LONGTEXT")
   private List<@Valid AgreementRef> agreement = new ArrayList<>();
 
+  @JdbcTypeCode(SqlTypes.JSON)
+  @Column(columnDefinition = "LONGTEXT")
   private @Nullable BillingAccountRef billingAccount;
 
   @Valid
+  @JdbcTypeCode(SqlTypes.JSON)
+  @Column(columnDefinition = "LONGTEXT")
   private List<@Valid RelatedChannel> channel = new ArrayList<>();
 
   @Valid
+  @JdbcTypeCode(SqlTypes.JSON)
+  @Column(columnDefinition = "LONGTEXT")
   private List<@Valid Note> note = new ArrayList<>();
 
   @Valid
+  @JdbcTypeCode(SqlTypes.JSON)
+  @Column(columnDefinition = "LONGTEXT")
   private List<@Valid OrderPrice> orderTotalPrice = new ArrayList<>();
 
   @Valid
+  @JdbcTypeCode(SqlTypes.JSON)
+  @Column(columnDefinition = "LONGTEXT")
   private List<@Valid PaymentRef> payment = new ArrayList<>();
 
   @Valid
+  @JdbcTypeCode(SqlTypes.JSON)
+  @Column(columnDefinition = "LONGTEXT")
   private List<@Valid ProductOfferingQualificationRef> productOfferingQualification = new ArrayList<>();
 
   @Valid
+  @JdbcTypeCode(SqlTypes.JSON)
+  @Column(columnDefinition = "LONGTEXT")
   private List<@Valid ProductOrderItem> productOrderItem = new ArrayList<>();
 
   @Valid
+  @JdbcTypeCode(SqlTypes.JSON)
+  @Column(columnDefinition = "LONGTEXT")
   private List<@Valid QuoteRef> quote = new ArrayList<>();
 
   @Valid
+  @JdbcTypeCode(SqlTypes.JSON)
+  @Column(columnDefinition = "LONGTEXT")
   private List<@Valid RelatedParty> relatedParty = new ArrayList<>();
 
+  @Enumerated(EnumType.STRING)
   private @Nullable ProductOrderStateType state;
 
   private @Nullable String atBaseType;
 
+  @Transient
   private @Nullable URI atSchemaLocation;
 
   private @Nullable String atType;

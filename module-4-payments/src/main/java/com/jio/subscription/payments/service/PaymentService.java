@@ -26,23 +26,39 @@ public class PaymentService {
     private static final int DEFAULT_LIMIT = 20;
     private static final int MAX_LIMIT = 100;
 
+    private static final String CREATE_OPERATION = "createPayment";
+
     private final PaymentRepository payments;
     private final PaymentAuditRepository audit;
     private final PaymentMapper mapper;
     private final PaymentStateMachine stateMachine;
     private final ObjectMapper objectMapper;
+    private final IdempotencyService idempotency;
 
     public PaymentService(PaymentRepository payments, PaymentAuditRepository audit, PaymentMapper mapper,
-            PaymentStateMachine stateMachine, ObjectMapper objectMapper) {
+            PaymentStateMachine stateMachine, ObjectMapper objectMapper, IdempotencyService idempotency) {
         this.payments = payments;
         this.audit = audit;
         this.mapper = mapper;
         this.stateMachine = stateMachine;
         this.objectMapper = objectMapper;
+        this.idempotency = idempotency;
     }
 
-    @Transactional
-    public Payment create(PaymentCreate request, String correlationId) {
+    /**
+     * Create a payment exactly once. The idempotency key is the supplied {@code idempotencyKey}
+     * (typically the {@code Idempotency-Key} header) or, failing that, the TMF {@code correlatorId}.
+     * Retries and duplicate submissions with the same key replay the original result rather than
+     * creating a second payment.
+     */
+    public IdempotentResult<Payment> create(PaymentCreate request, String idempotencyKey, String correlationId) {
+        String key = resolveKey(idempotencyKey, request.getCorrelatorId());
+        String requestHash = key == null ? null : idempotency.hash(request);
+        return idempotency.execute(key, CREATE_OPERATION, requestHash, Payment.class,
+                () -> doCreate(request, key, requestHash, correlationId));
+    }
+
+    private Payment doCreate(PaymentCreate request, String key, String requestHash, String correlationId) {
         PaymentEntity entity = mapper.toEntity(request);
         entity.setId(UUID.randomUUID().toString());
         stateMachine.initialize(entity, correlationId);
@@ -55,7 +71,20 @@ public class PaymentService {
 
         payments.save(entity);
         audit.save(new PaymentAudit("Payment", entity.getId(), "CREATE", null, correlationId));
+        // Durable idempotency record committed atomically with the payment write.
+        idempotency.recordCompletion(key, CREATE_OPERATION, requestHash,
+                objectMapper.writeValueAsString(dto), 201);
         return dto;
+    }
+
+    private static String resolveKey(String idempotencyKey, String correlatorId) {
+        if (idempotencyKey != null && !idempotencyKey.isBlank()) {
+            return idempotencyKey.trim();
+        }
+        if (correlatorId != null && !correlatorId.isBlank()) {
+            return correlatorId.trim();
+        }
+        return null;
     }
 
     @Transactional(readOnly = true)

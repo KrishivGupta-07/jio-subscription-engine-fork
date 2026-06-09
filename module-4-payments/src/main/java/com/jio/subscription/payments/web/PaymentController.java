@@ -3,6 +3,7 @@ package com.jio.subscription.payments.web;
 import com.jio.payments.tmf676.api.PaymentApi;
 import com.jio.payments.tmf676.model.Payment;
 import com.jio.payments.tmf676.model.PaymentCreate;
+import com.jio.subscription.payments.service.IdempotentResult;
 import com.jio.subscription.payments.service.PaymentService;
 import java.net.URI;
 import java.util.List;
@@ -24,8 +25,14 @@ public class PaymentController implements PaymentApi {
 
     @Override
     public ResponseEntity<Payment> createPayment(PaymentCreate payment) {
-        Payment created = service.create(payment, RequestCorrelation.current());
-        return ResponseEntity.created(URI.create(created.getHref())).body(created);
+        IdempotentResult<Payment> result =
+                service.create(payment, IdempotencyKeys.fromCurrentRequest(), RequestCorrelation.current());
+        Payment created = result.value();
+        URI location = URI.create(created.getHref());
+        // Replays return 200 with the original resource; the first request returns 201 Created.
+        return result.replayed()
+                ? ResponseEntity.ok().location(location).body(created)
+                : ResponseEntity.created(location).body(created);
     }
 
     @Override

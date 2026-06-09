@@ -45,7 +45,7 @@ public class ReconciliationException {
     @Column(name = "actual_amount", precision = 19, scale = 4)
     private BigDecimal actualAmount;
 
-    @JdbcTypeCode(SqlTypes.JSON)
+    @JdbcTypeCode(SqlTypes.LONGVARCHAR)
     @Column(name = "detail")
     private String detail;
 

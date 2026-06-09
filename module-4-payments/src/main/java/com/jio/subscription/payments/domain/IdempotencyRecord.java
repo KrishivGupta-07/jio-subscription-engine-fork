@@ -35,7 +35,7 @@ public class IdempotencyRecord {
     @Column(name = "response_status_code")
     private Integer responseStatusCode;
 
-    @JdbcTypeCode(SqlTypes.JSON)
+    @JdbcTypeCode(SqlTypes.LONGVARCHAR)
     @Column(name = "response_body")
     private String responseBody;
 

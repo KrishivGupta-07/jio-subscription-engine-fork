@@ -30,7 +30,7 @@ public class PaymentAudit {
     @Column(name = "action", length = 64, nullable = false)
     private String action;
 
-    @JdbcTypeCode(SqlTypes.JSON)
+    @JdbcTypeCode(SqlTypes.LONGVARCHAR)
     @Column(name = "detail")
     private String detail;
 

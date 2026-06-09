@@ -53,7 +53,7 @@ public class PaymentMethodEntity extends AuditedEntity {
     @Column(name = "valid_for_end")
     private OffsetDateTime validForEnd;
 
-    @JdbcTypeCode(SqlTypes.JSON)
+    @JdbcTypeCode(SqlTypes.LONGVARCHAR)
     @Column(name = "dto_json")
     private String dtoJson;
 

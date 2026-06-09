@@ -71,7 +71,7 @@ public class RefundEntity extends AuditedEntity {
     @Column(name = "status_date")
     private OffsetDateTime statusDate;
 
-    @JdbcTypeCode(SqlTypes.JSON)
+    @JdbcTypeCode(SqlTypes.LONGVARCHAR)
     @Column(name = "dto_json")
     private String dtoJson;
 

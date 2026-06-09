@@ -33,7 +33,7 @@ public class OutboxEvent {
     @Column(name = "topic", length = 128, nullable = false)
     private String topic;
 
-    @JdbcTypeCode(SqlTypes.JSON)
+    @JdbcTypeCode(SqlTypes.LONGVARCHAR)
     @Column(name = "payload", nullable = false)
     private String payload;
 

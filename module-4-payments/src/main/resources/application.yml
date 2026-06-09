@@ -3,7 +3,7 @@ spring:
     name: payments
 
   datasource:
-    url: ${PAYMENTS_DB_URL:jdbc:postgresql://localhost:5432/payments}
+    url: ${PAYMENTS_DB_URL:jdbc:mariadb://localhost:3306/payments}
     username: ${PAYMENTS_DB_USER:payments}
     password: ${PAYMENTS_DB_PASSWORD:payments}
     hikari:
@@ -28,6 +28,9 @@ spring:
     redis:
       host: ${PAYMENTS_REDIS_HOST:localhost}
       port: ${PAYMENTS_REDIS_PORT:6379}
+      # Redis is used for distributed locking/idempotency, not Spring Data Redis repositories.
+      repositories:
+        enabled: false
 
   kafka:
     bootstrap-servers: ${PAYMENTS_KAFKA_BOOTSTRAP:localhost:9092}
